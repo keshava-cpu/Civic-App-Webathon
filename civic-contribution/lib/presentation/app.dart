@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:civic_contribution/presentation/config/theme.dart';
 import 'package:civic_contribution/application/providers/admin_data_provider.dart';
+import 'package:civic_contribution/application/providers/account_management_provider.dart';
+import 'package:civic_contribution/application/providers/archive_provider.dart';
 import 'package:civic_contribution/application/providers/community_provider.dart';
 import 'package:civic_contribution/application/providers/issue_provider.dart';
 import 'package:civic_contribution/application/providers/leaderboard_provider.dart';
 import 'package:civic_contribution/application/providers/report_flow_provider.dart';
 import 'package:civic_contribution/application/providers/user_provider.dart';
 import 'package:civic_contribution/application/providers/verification_provider.dart';
+import 'package:civic_contribution/data/services/archive_service.dart';
+import 'package:civic_contribution/data/services/archive_storage_service.dart';
 import 'package:civic_contribution/data/services/auth_service.dart';
 import 'package:civic_contribution/data/services/community_service.dart';
 import 'package:civic_contribution/data/services/credits_service.dart';
@@ -31,6 +35,8 @@ class CivicApp extends StatelessWidget {
     final authService = AuthService();
     final communityService = CommunityService();
     final exportService = ExportService();
+    final archiveService = ArchiveService();
+    final archiveStorageService = ArchiveStorageService();
 
     return MultiProvider(
       providers: [
@@ -46,6 +52,10 @@ class CivicApp extends StatelessWidget {
         ),
         Provider<CommunityService>(create: (_) => communityService),
         Provider<ExportService>(create: (_) => exportService),
+        Provider<ArchiveService>(create: (_) => archiveService),
+        Provider<ArchiveStorageService>(
+          create: (_) => archiveStorageService,
+        ),
         ChangeNotifierProvider<UserProvider>(
           create: (_) => UserProvider(authService, firestoreService),
         ),
@@ -60,6 +70,13 @@ class CivicApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<AdminDataProvider>(
           create: (_) => AdminDataProvider(firestoreService, exportService),
+        ),
+        ChangeNotifierProvider<ArchiveProvider>(
+          create: (_) => ArchiveProvider(
+            archiveService,
+            archiveStorageService,
+            firestoreService,
+          ),
         ),
         ChangeNotifierProvider<ReportFlowProvider>(
           create: (ctx) => ReportFlowProvider(
@@ -77,6 +94,21 @@ class CivicApp extends StatelessWidget {
             ctx.read<StorageService>(),
             creditsService,
           ),
+        ),
+        ChangeNotifierProxyProvider<UserProvider, AccountManagementProvider>(
+          create: (ctx) => AccountManagementProvider(
+            communityService,
+            firestoreService,
+            authService,
+            ctx.read<UserProvider>(),
+          ),
+          update: (ctx, userProvider, previous) =>
+              previous ?? AccountManagementProvider(
+                communityService,
+                firestoreService,
+                authService,
+                userProvider,
+              ),
         ),
       ],
       child: Builder(

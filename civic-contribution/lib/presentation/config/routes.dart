@@ -10,6 +10,7 @@ import 'package:civic_contribution/presentation/screens/map/map_screen.dart';
 import 'package:civic_contribution/presentation/screens/report/camera_screen.dart';
 import 'package:civic_contribution/presentation/screens/report/confirm_screen.dart';
 import 'package:civic_contribution/presentation/screens/report/form_screen.dart';
+import 'package:civic_contribution/presentation/screens/settings/settings_screen.dart';
 import 'package:civic_contribution/presentation/screens/verification/verify_screen.dart';
 
 /// Single responsibility: declares all named routes and the auth redirect guard.
@@ -25,6 +26,7 @@ class AppRoutes {
   static const map = '/map';
   static const communitySelection = '/community-select';
   static const adminData = '/admin/data';
+  static const settings = '/settings';
 
   static GoRouter createRouter(UserProvider userProvider) {
     return GoRouter(
@@ -107,6 +109,10 @@ class AppRoutes {
         GoRoute(
           path: adminData,
           builder: (context, state) => const AdminDataScreen(),
+        ),
+        GoRoute(
+          path: settings,
+          builder: (context, state) => const SettingsScreen(),
         ),
       ],
     );

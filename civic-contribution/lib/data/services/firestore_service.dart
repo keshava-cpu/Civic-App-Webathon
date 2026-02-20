@@ -169,6 +169,17 @@ class FirestoreService {
         .map((snap) => snap.docs.map((d) => Issue.fromFirestore(d)).toList());
   }
 
+  /// Returns only unresolved issues (pending, assigned, inProgress).
+  Stream<List<Issue>> getUnresolvedIssuesByCommunityStream(
+      String communityId) {
+    return _issues
+        .where('communityId', isEqualTo: communityId)
+        .where('status', whereIn: ['pending', 'assigned', 'inProgress'])
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => Issue.fromFirestore(d)).toList());
+  }
+
   Stream<List<UserProfile>> getLeaderboardByCommunityStream(String communityId) {
     return _users
         .where('communityId', isEqualTo: communityId)
@@ -198,6 +209,35 @@ class FirestoreService {
 
   Future<void> updateUserCommunity(String userId, String communityId) async {
     await _users.doc(userId).update({'communityId': communityId});
+  }
+
+  // ── Account / Community management ────────────────────────────────────
+
+  /// Clears the user's community association and admin flag.
+  Future<void> clearUserCommunity(String userId) async {
+    await _users.doc(userId).update({
+      'communityId': FieldValue.delete(),
+      'isAdmin': false,
+    });
+  }
+
+  /// Deletes the user's Firestore profile document.
+  Future<void> deleteUser(String userId) async {
+    await _users.doc(userId).delete();
+  }
+
+  /// Batch-clears communityId and isAdmin for every user in the community.
+  Future<void> resetCommunityUsers(String communityId) async {
+    final snap =
+        await _users.where('communityId', isEqualTo: communityId).get();
+    final batch = _db.batch();
+    for (final doc in snap.docs) {
+      batch.update(doc.reference, {
+        'communityId': FieldValue.delete(),
+        'isAdmin': false,
+      });
+    }
+    await batch.commit();
   }
 
   // ── Seeding ──────────────────────────────────────────────────────────────

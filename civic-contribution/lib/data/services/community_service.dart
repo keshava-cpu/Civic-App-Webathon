@@ -49,6 +49,27 @@ class CommunityService {
     });
   }
 
+  /// Decrements memberCount and removes userId from adminUids.
+  Future<void> leaveCommunity(String communityId, String userId) async {
+    await _communities.doc(communityId).update({
+      'memberCount': FieldValue.increment(-1),
+      'adminUids': FieldValue.arrayRemove([userId]),
+    });
+  }
+
+  /// Removes a user from the community's adminUids array.
+  Future<void> removeAdminFromCommunity(
+      String communityId, String userId) async {
+    await _communities.doc(communityId).update({
+      'adminUids': FieldValue.arrayRemove([userId]),
+    });
+  }
+
+  /// Deletes the community document.
+  Future<void> deleteCommunity(String communityId) async {
+    await _communities.doc(communityId).delete();
+  }
+
   /// All communities stream (for optional browsing).
   Stream<List<Community>> getCommunitiesStream() {
     return _communities.snapshots().map((snap) =>

@@ -42,6 +42,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               actions: [
+                if (_navIndex == 3)
+                  IconButton(
+                    icon: const Icon(Icons.settings_outlined),
+                    tooltip: 'Settings',
+                    onPressed: () => context.push(AppRoutes.settings),
+                  ),
                 IconButton(
                   icon: const Icon(Icons.logout_outlined),
                   tooltip: 'Sign out',

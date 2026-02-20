@@ -5,6 +5,7 @@ import 'package:civic_contribution/application/providers/admin_data_provider.dar
 import 'package:civic_contribution/application/providers/user_provider.dart';
 import 'package:civic_contribution/domain/constants.dart';
 import 'package:civic_contribution/domain/models/issue.dart';
+import 'package:civic_contribution/presentation/widgets/archive_progress_dialog.dart';
 
 /// Admin community data table with export.
 class AdminDataScreen extends StatefulWidget {
@@ -48,10 +49,14 @@ class _AdminDataScreenState extends State<AdminDataScreen> {
               onSelected: (value) {
                 if (value == 'csv') provider.exportCsv();
                 if (value == 'images') provider.exportWithImages();
+                if (value == 'archive') {
+                  ArchiveProgressDialog.show(context);
+                }
               },
               itemBuilder: (_) => [
                 const PopupMenuItem(value: 'csv', child: Text('Export CSV only')),
                 const PopupMenuItem(value: 'images', child: Text('Export CSV + Images')),
+                const PopupMenuItem(value: 'archive', child: Text('Download Archive (ZIP)')),
               ],
               icon: const Icon(Icons.download_outlined),
               tooltip: 'Export',

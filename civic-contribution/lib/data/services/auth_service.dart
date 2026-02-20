@@ -37,6 +37,13 @@ class AuthService {
     await _firebaseAuth.signOut();
   }
 
+  /// Permanently deletes the current Firebase Auth account.
+  Future<void> deleteAccount() async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) return;
+    await user.delete();
+  }
+
   AuthUser? _toAuthUser(User? firebaseUser) {
     if (firebaseUser == null) return null;
     return AuthUser(
