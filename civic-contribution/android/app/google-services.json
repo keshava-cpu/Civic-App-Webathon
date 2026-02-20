@@ -12,7 +12,20 @@
           "package_name": "com.hackathon.civic_contribution"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "888278690124-745gvrt311kp3vsg1dhbj7fuvv4m1tfl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hackathon.civic_contribution",
+            "certificate_hash": "3b9ee9f64bab8bfc4382ee4629f4ddd19479d313"
+          }
+        },
+        {
+          "client_id": "888278690124-r6biegl961dodoabak5j7vcnrv4gnn5i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDZRtZ9ezNRulMN7fMgBxIiLTrbKD9wr9Y"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888278690124-r6biegl961dodoabak5j7vcnrv4gnn5i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

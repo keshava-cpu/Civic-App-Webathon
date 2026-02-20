@@ -22,7 +22,12 @@ dependencies:
   # Firebase
   firebase_core: ^3.8.0
   cloud_firestore: ^5.5.0
+  firebase_auth: ^5.3.4
+  firebase_storage: ^12.3.7
   firebase_messaging: ^15.1.6
+
+  # Auth
+  google_sign_in: ^6.2.2
 
   # Camera & Image
   camera: ^0.11.0+2
@@ -40,11 +45,20 @@ dependencies:
   geolocator: ^13.0.2
   geocoding: ^3.0.0
 
+  # Image viewer
+  photo_view: ^0.15.0
+
+  # HTTP for image download
+  http: ^1.2.2
+
   # Notifications
   flutter_local_notifications: ^18.0.1
 
   # Permissions
   permission_handler: ^11.3.1
+
+  # Sharing
+  share_plus: ^10.1.4
 
   # Utils
   uuid: ^4.5.1
