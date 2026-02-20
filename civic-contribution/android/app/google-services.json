@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "888278690124",
+    "project_id": "civic-contribution",
+    "storage_bucket": "civic-contribution.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888278690124:android:49323496f2a6d717db47e9",
+        "android_client_info": {
+          "package_name": "com.hackathon.civic_contribution"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZRtZ9ezNRulMN7fMgBxIiLTrbKD9wr9Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
