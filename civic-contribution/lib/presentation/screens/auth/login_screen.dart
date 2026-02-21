@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:civic_contribution/data/services/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Login screen. Single responsibility: Google sign-in entry point.
 class LoginScreen extends StatefulWidget {
@@ -20,15 +21,19 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      final user = await context.read<AuthService>().signInWithGoogle();
-      if (user == null && mounted) {
+      // Opens the system browser for Google OAuth. The session is delivered
+      // via the deep-link callback to authStateChanges, which causes GoRouter
+      // to redirect away from /login automatically.
+      await context.read<AuthService>().signInWithGoogle();
+      // Reset spinner — if the user cancels the browser we land back here.
+      if (mounted) setState(() => _signingIn = false);
+    } on AuthException catch (e) {
+      if (mounted) {
         setState(() {
-          _error = 'Sign-in cancelled.';
+          _error = e.message;
           _signingIn = false;
         });
       }
-      // On success, UserProvider.authStateChanges fires → GoRouter redirect
-      // navigates away from /login automatically. No manual navigation here.
     } catch (e) {
       if (mounted) {
         setState(() {

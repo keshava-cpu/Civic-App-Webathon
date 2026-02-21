@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:civic_contribution/domain/constants.dart';
 import 'package:civic_contribution/domain/models/issue.dart';
 import 'package:civic_contribution/domain/models/user_profile.dart';
-import 'package:civic_contribution/data/services/firestore_service.dart';
+import 'package:civic_contribution/data/services/database_service.dart';
 import 'package:civic_contribution/application/providers/issue_provider.dart';
 import 'package:civic_contribution/application/providers/user_provider.dart';
 import 'package:civic_contribution/core/utils/date_utils.dart';
@@ -21,7 +21,7 @@ class IssueDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fs = context.read<FirestoreService>();
+    final fs = context.read<DatabaseService>();
     final userProvider = context.read<UserProvider>();
     final currentUserId = userProvider.currentUserId;
     final isAdmin = userProvider.isAdmin;
@@ -107,7 +107,7 @@ void _openFullScreenPhoto(BuildContext context, Issue issue) {
 
 class _IssueDetailBody extends StatelessWidget {
   final Issue issue;
-  final FirestoreService fs;
+  final DatabaseService fs;
   final String currentUserId;
   final bool isAdmin;
 
@@ -180,7 +180,7 @@ class _IssueDetailBody extends StatelessWidget {
               child: Text(
                 issue.address.isNotEmpty
                     ? issue.address
-                    : '${issue.location.latitude.toStringAsFixed(5)}, ${issue.location.longitude.toStringAsFixed(5)}',
+                    : '${issue.latitude.toStringAsFixed(5)}, ${issue.longitude.toStringAsFixed(5)}',
                 style: TextStyle(fontSize: 12, color: cs.outline),
               ),
             ),
@@ -285,7 +285,7 @@ class _IssueDetailBody extends StatelessWidget {
 class _StatusTimeline extends StatelessWidget {
   final IssueStatus currentStatus;
   final String issueId;
-  final FirestoreService fs;
+  final DatabaseService fs;
   final bool isAdmin;
 
   const _StatusTimeline({
@@ -426,7 +426,7 @@ class _StatusTimeline extends StatelessWidget {
 
 class _ContributorsSection extends StatelessWidget {
   final Issue issue;
-  final FirestoreService fs;
+  final DatabaseService fs;
 
   const _ContributorsSection({required this.issue, required this.fs});
 

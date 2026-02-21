@@ -64,8 +64,8 @@ class ArchiveService {
       final id = issue.id.length > 8 ? issue.id.substring(0, 8) : issue.id;
       final cat = issue.category.label;
       final status = issue.status.label;
-      final lat = issue.location.latitude.toStringAsFixed(6);
-      final lon = issue.location.longitude.toStringAsFixed(6);
+      final lat = issue.latitude.toStringAsFixed(6);
+      final lon = issue.longitude.toStringAsFixed(6);
       final addr = '"${issue.address.replaceAll('"', '""')}"';
       final desc = '"${issue.description.replaceAll('"', '""')}"';
       final created = issue.createdAt.toIso8601String();

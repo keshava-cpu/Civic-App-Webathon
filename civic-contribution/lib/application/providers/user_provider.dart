@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:civic_contribution/domain/models/auth_user.dart';
 import 'package:civic_contribution/domain/models/user_profile.dart';
 import 'package:civic_contribution/data/services/auth_service.dart';
-import 'package:civic_contribution/data/services/firestore_service.dart';
+import 'package:civic_contribution/data/services/database_service.dart';
 
 /// Manages auth state and the current user's Firestore profile.
-/// Single responsibility: bridges AuthService + FirestoreService into app state.
+/// Single responsibility: bridges AuthService + DatabaseService into app state.
 class UserProvider extends ChangeNotifier {
   final AuthService _authService;
-  final FirestoreService _firestoreService;
+  final DatabaseService _firestoreService;
 
   AuthUser? _authUser;
   UserProfile? _currentUserProfile;

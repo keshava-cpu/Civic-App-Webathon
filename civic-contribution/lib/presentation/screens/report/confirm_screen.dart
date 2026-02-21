@@ -45,6 +45,35 @@ class ReportConfirmScreen extends StatelessWidget {
               ),
             const SizedBox(height: 20),
 
+            // pHash duplicate reminder card — compact version
+            if (provider.hasPHashWarning) ...[
+              Card(
+                color: cs.errorContainer,
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 10),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning_amber_rounded,
+                          color: cs.onErrorContainer, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Submitting will add your upvote to the existing similar issue.',
+                          style: TextStyle(
+                            color: cs.onErrorContainer,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+
             // Summary card
             Card(
               margin: EdgeInsets.zero,
@@ -154,4 +183,3 @@ class ReportConfirmScreen extends StatelessWidget {
     );
   }
 }
-

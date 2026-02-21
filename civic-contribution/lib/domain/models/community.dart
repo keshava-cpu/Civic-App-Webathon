@@ -17,18 +17,18 @@ class Community {
     return Community(
       id: id,
       name: data['name'] ?? '',
-      createdBy: data['createdBy'] ?? '',
-      adminUids: List<String>.from(data['adminUids'] ?? []),
-      memberCount: (data['memberCount'] ?? 0) as int,
+      createdBy: data['created_by'] ?? data['createdBy'] ?? '',
+      adminUids: List<String>.from(data['admin_uids'] ?? data['adminUids'] ?? []),
+      memberCount: (data['member_count'] ?? data['memberCount'] ?? 0) as int,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'createdBy': createdBy,
-      'adminUids': adminUids,
-      'memberCount': memberCount,
+      'created_by': createdBy,
+      'admin_uids': adminUids,
+      'member_count': memberCount,
     };
   }
 

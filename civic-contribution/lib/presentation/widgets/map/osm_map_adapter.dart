@@ -78,8 +78,8 @@ class _OsmMapState extends State<_OsmMap> {
               .map((issue) {
             return Marker(
               point: LatLng(
-                issue.location.latitude,
-                issue.location.longitude,
+                issue.latitude,
+                issue.longitude,
               ),
               width: 56,
               height: 56,

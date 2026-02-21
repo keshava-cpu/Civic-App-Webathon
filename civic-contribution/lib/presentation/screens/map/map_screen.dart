@@ -43,8 +43,8 @@ class _MapScreenState extends State<MapScreen> {
     double minDist = double.infinity;
     for (final issue in filteredIssues) {
       if (!issue.hasValidLocation) continue;
-      final dlat = issue.location.latitude - _stableCenter.latitude;
-      final dlon = issue.location.longitude - _stableCenter.longitude;
+      final dlat = issue.latitude - _stableCenter.latitude;
+      final dlon = issue.longitude - _stableCenter.longitude;
       final dist = dlat * dlat + dlon * dlon; // squared distance is enough for comparison
       if (dist < minDist) {
         minDist = dist;
@@ -54,8 +54,8 @@ class _MapScreenState extends State<MapScreen> {
     if (nearest.hasValidLocation) {
       setState(() {
         _stableCenter = LatLng(
-          nearest.location.latitude,
-          nearest.location.longitude,
+          nearest.latitude,
+          nearest.longitude,
         );
       });
     }
@@ -85,8 +85,8 @@ class _MapScreenState extends State<MapScreen> {
       final latest = issueProvider.latestReportedIssue;
       if (latest != null && latest.hasValidLocation) {
         _stableCenter = LatLng(
-          latest.location.latitude,
-          latest.location.longitude,
+          latest.latitude,
+          latest.longitude,
         );
         _centeredOnLatestIssue = true;
       }

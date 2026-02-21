@@ -15,12 +15,13 @@ import 'package:civic_contribution/data/services/archive_storage_service.dart';
 import 'package:civic_contribution/data/services/auth_service.dart';
 import 'package:civic_contribution/data/services/community_service.dart';
 import 'package:civic_contribution/data/services/credits_service.dart';
+import 'package:civic_contribution/data/services/database_service.dart';
 import 'package:civic_contribution/data/services/duplicate_service.dart';
 import 'package:civic_contribution/data/services/export_service.dart';
-import 'package:civic_contribution/data/services/firestore_service.dart';
 import 'package:civic_contribution/data/services/image_metadata_service.dart';
 import 'package:civic_contribution/data/services/location_service.dart';
 import 'package:civic_contribution/data/services/notification_service.dart';
+import 'package:civic_contribution/data/services/phash_service.dart';
 import 'package:civic_contribution/data/services/storage_service.dart';
 import 'package:civic_contribution/presentation/config/routes.dart';
 
@@ -30,26 +31,29 @@ class CivicApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final firestoreService = FirestoreService();
-    final creditsService = CreditsService(firestoreService);
+    final databaseService = DatabaseService();
+    final creditsService = CreditsService(databaseService);
     final authService = AuthService();
     final communityService = CommunityService();
     final exportService = ExportService();
     final archiveService = ArchiveService();
     final archiveStorageService = ArchiveStorageService();
+    final phashService = PhashService();
+    final duplicateService = DuplicateService(databaseService, phashService);
 
     return MultiProvider(
       providers: [
         Provider<AuthService>(create: (_) => authService),
-        Provider<FirestoreService>(create: (_) => firestoreService),
+        Provider<DatabaseService>(create: (_) => databaseService),
         Provider<StorageService>(create: (_) => StorageService()),
         Provider<LocationService>(create: (_) => LocationService()),
         Provider<NotificationService>(create: (_) => NotificationService()),
-        Provider<ImageMetadataService>(create: (_) => ImageMetadataService()),
-        Provider<CreditsService>(create: (_) => creditsService),
-        Provider<DuplicateService>(
-          create: (_) => DuplicateService(firestoreService),
+        Provider<PhashService>(create: (_) => phashService),
+        Provider<ImageMetadataService>(
+          create: (_) => ImageMetadataService(phashService),
         ),
+        Provider<CreditsService>(create: (_) => creditsService),
+        Provider<DuplicateService>(create: (_) => duplicateService),
         Provider<CommunityService>(create: (_) => communityService),
         Provider<ExportService>(create: (_) => exportService),
         Provider<ArchiveService>(create: (_) => archiveService),
@@ -57,40 +61,60 @@ class CivicApp extends StatelessWidget {
           create: (_) => archiveStorageService,
         ),
         ChangeNotifierProvider<UserProvider>(
-          create: (_) => UserProvider(authService, firestoreService),
+          create: (_) => UserProvider(authService, databaseService),
         ),
-        ChangeNotifierProvider<IssueProvider>(
-          create: (_) => IssueProvider(firestoreService, creditsService),
+        ChangeNotifierProxyProvider<UserProvider, IssueProvider>(
+          create: (ctx) => IssueProvider(databaseService, creditsService),
+          update: (ctx, userProvider, previous) {
+            final issueProvider = previous ?? IssueProvider(databaseService, creditsService);
+            issueProvider.reinitialize(userProvider.communityId);
+            return issueProvider;
+          },
         ),
-        ChangeNotifierProvider<LeaderboardProvider>(
-          create: (_) => LeaderboardProvider(firestoreService),
+        ChangeNotifierProxyProvider<UserProvider, LeaderboardProvider>(
+          create: (ctx) => LeaderboardProvider(databaseService),
+          update: (ctx, userProvider, previous) {
+            final leaderboardProvider = previous ?? LeaderboardProvider(databaseService);
+            leaderboardProvider.reinitialize(userProvider.communityId);
+            return leaderboardProvider;
+          },
         ),
         ChangeNotifierProvider<CommunityProvider>(
-          create: (_) => CommunityProvider(communityService, firestoreService),
+          create: (_) =>
+              CommunityProvider(communityService, databaseService),
         ),
-        ChangeNotifierProvider<AdminDataProvider>(
-          create: (_) => AdminDataProvider(firestoreService, exportService),
+        ChangeNotifierProxyProvider<UserProvider, AdminDataProvider>(
+          create: (ctx) => AdminDataProvider(databaseService, exportService),
+          update: (ctx, userProvider, previous) {
+            final adminProvider = previous ?? AdminDataProvider(databaseService, exportService);
+            final communityId = userProvider.communityId;
+            if (communityId != null && userProvider.isAdmin) {
+              adminProvider.subscribeToIssues(communityId);
+            }
+            return adminProvider;
+          },
         ),
         ChangeNotifierProvider<ArchiveProvider>(
           create: (_) => ArchiveProvider(
             archiveService,
             archiveStorageService,
-            firestoreService,
+            databaseService,
           ),
         ),
         ChangeNotifierProvider<ReportFlowProvider>(
           create: (ctx) => ReportFlowProvider(
             locationService: ctx.read<LocationService>(),
-            firestoreService: firestoreService,
+            firestoreService: databaseService,
             storageService: ctx.read<StorageService>(),
-            duplicateService: ctx.read<DuplicateService>(),
+            duplicateService: duplicateService,
             creditsService: creditsService,
             metadataService: ctx.read<ImageMetadataService>(),
+            phashService: phashService,
           ),
         ),
         ChangeNotifierProvider<VerificationProvider>(
           create: (ctx) => VerificationProvider(
-            firestoreService,
+            databaseService,
             ctx.read<StorageService>(),
             creditsService,
           ),
@@ -98,14 +122,15 @@ class CivicApp extends StatelessWidget {
         ChangeNotifierProxyProvider<UserProvider, AccountManagementProvider>(
           create: (ctx) => AccountManagementProvider(
             communityService,
-            firestoreService,
+            databaseService,
             authService,
             ctx.read<UserProvider>(),
           ),
           update: (ctx, userProvider, previous) =>
-              previous ?? AccountManagementProvider(
+              previous ??
+              AccountManagementProvider(
                 communityService,
-                firestoreService,
+                databaseService,
                 authService,
                 userProvider,
               ),

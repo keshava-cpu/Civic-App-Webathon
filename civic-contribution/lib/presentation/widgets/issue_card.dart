@@ -37,8 +37,8 @@ class IssueCard extends StatelessWidget {
       final meters = GeoUtils.distanceInMeters(
         userLat!,
         userLon!,
-        issue.location.latitude,
-        issue.location.longitude,
+        issue.latitude,
+        issue.longitude,
       );
       distanceText = GeoUtils.formatDistance(meters);
     }
@@ -131,7 +131,7 @@ class IssueCard extends StatelessWidget {
                               child: Text(
                                 issue.address.isNotEmpty
                                     ? issue.address
-                                    : '${issue.location.latitude.toStringAsFixed(4)}, ${issue.location.longitude.toStringAsFixed(4)}',
+                                    : '${issue.latitude.toStringAsFixed(4)}, ${issue.longitude.toStringAsFixed(4)}',
                                 style: TextStyle(
                                     fontSize: 10, color: cs.outline),
                                 overflow: TextOverflow.ellipsis,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:civic_contribution/domain/models/micro_task.dart';
 import 'package:civic_contribution/data/services/credits_service.dart';
-import 'package:civic_contribution/data/services/firestore_service.dart';
+import 'package:civic_contribution/data/services/database_service.dart';
 
 class MicroTaskTile extends StatelessWidget {
   final MicroTask task;
   final String currentUserId;
-  final FirestoreService firestoreService;
+  final DatabaseService firestoreService;
   final CreditsService creditsService;
 
   const MicroTaskTile({

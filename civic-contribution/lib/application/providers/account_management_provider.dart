@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:civic_contribution/data/services/auth_service.dart';
 import 'package:civic_contribution/data/services/community_service.dart';
-import 'package:civic_contribution/data/services/firestore_service.dart';
+import 'package:civic_contribution/data/services/database_service.dart';
 import 'package:civic_contribution/application/providers/user_provider.dart';
 
 /// Single responsibility: orchestrates community leave/switch,
 /// community deletion, and account deletion.
 class AccountManagementProvider extends ChangeNotifier {
   final CommunityService _communityService;
-  final FirestoreService _firestoreService;
+  final DatabaseService _firestoreService;
   final AuthService _authService;
   final UserProvider _userProvider;
 

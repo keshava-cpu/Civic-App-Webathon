@@ -149,7 +149,7 @@ class _IssueRow extends StatelessWidget {
       subtitle: Text(
         issue.address.isNotEmpty
             ? issue.address
-            : '${issue.location.latitude.toStringAsFixed(4)}, ${issue.location.longitude.toStringAsFixed(4)}',
+            : '${issue.latitude.toStringAsFixed(4)}, ${issue.longitude.toStringAsFixed(4)}',
         style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
       ),
       trailing: const Icon(Icons.chevron_right, size: 18),

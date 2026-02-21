@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Badge {
   final String id;
   final String label;
@@ -18,7 +16,9 @@ class Badge {
       id: map['id'] ?? '',
       label: map['label'] ?? '',
       emoji: map['emoji'] ?? '',
-      earnedAt: (map['earnedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      earnedAt: map['earned_at'] != null
+          ? DateTime.parse(map['earned_at'] as String)
+          : DateTime.now(),
     );
   }
 
@@ -27,7 +27,7 @@ class Badge {
       'id': id,
       'label': label,
       'emoji': emoji,
-      'earnedAt': Timestamp.fromDate(earnedAt),
+      'earned_at': earnedAt.toIso8601String(),
     };
   }
 }
@@ -59,55 +59,36 @@ class UserProfile {
     this.communityId,
   });
 
-  factory UserProfile.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return UserProfile(
-      id: doc.id,
-      displayName: data['displayName'] ?? '',
-      avatarUrl: data['avatarUrl'],
-      trustScore: (data['trustScore'] ?? 0.5).toDouble(),
-      civicCredits: (data['civicCredits'] ?? 0) as int,
-      badges: (data['badges'] as List<dynamic>? ?? [])
-          .map((b) => Badge.fromMap(b as Map<String, dynamic>))
-          .toList(),
-      issuesReported: (data['issuesReported'] ?? 0) as int,
-      verificationsCompleted: (data['verificationsCompleted'] ?? 0) as int,
-      tasksCompleted: (data['tasksCompleted'] ?? 0) as int,
-      isAdmin: (data['isAdmin'] ?? false) as bool,
-      communityId: data['communityId'],
-    );
-  }
-
   factory UserProfile.fromMap(String id, Map<String, dynamic> data) {
     return UserProfile(
       id: id,
-      displayName: data['displayName'] ?? '',
-      avatarUrl: data['avatarUrl'],
-      trustScore: (data['trustScore'] ?? 0.5).toDouble(),
-      civicCredits: (data['civicCredits'] ?? 0) as int,
+      displayName: data['display_name'] ?? '',
+      avatarUrl: data['avatar_url'],
+      trustScore: (data['trust_score'] ?? 0.5).toDouble(),
+      civicCredits: (data['civic_credits'] ?? 0) as int,
       badges: (data['badges'] as List<dynamic>? ?? [])
           .map((b) => Badge.fromMap(b as Map<String, dynamic>))
           .toList(),
-      issuesReported: (data['issuesReported'] ?? 0) as int,
-      verificationsCompleted: (data['verificationsCompleted'] ?? 0) as int,
-      tasksCompleted: (data['tasksCompleted'] ?? 0) as int,
-      isAdmin: (data['isAdmin'] ?? false) as bool,
-      communityId: data['communityId'],
+      issuesReported: (data['issues_reported'] ?? 0) as int,
+      verificationsCompleted: (data['verifications_completed'] ?? 0) as int,
+      tasksCompleted: (data['tasks_completed'] ?? 0) as int,
+      isAdmin: (data['is_admin'] ?? false) as bool,
+      communityId: data['community_id'],
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
-      'displayName': displayName,
-      'avatarUrl': avatarUrl,
-      'trustScore': trustScore,
-      'civicCredits': civicCredits,
+      'display_name': displayName,
+      'avatar_url': avatarUrl,
+      'trust_score': trustScore,
+      'civic_credits': civicCredits,
       'badges': badges.map((b) => b.toMap()).toList(),
-      'issuesReported': issuesReported,
-      'verificationsCompleted': verificationsCompleted,
-      'tasksCompleted': tasksCompleted,
-      'isAdmin': isAdmin,
-      'communityId': communityId,
+      'issues_reported': issuesReported,
+      'verifications_completed': verificationsCompleted,
+      'tasks_completed': tasksCompleted,
+      'is_admin': isAdmin,
+      'community_id': communityId,
     };
   }
 

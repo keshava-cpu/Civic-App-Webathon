@@ -2,9 +2,11 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:exif/exif.dart';
+import 'package:civic_contribution/data/services/phash_service.dart';
 
 class ImageMetadata {
   final String hash;
+  final String? pHashValue;
   final DateTime? capturedAt;
   final double? latitude;
   final double? longitude;
@@ -12,6 +14,7 @@ class ImageMetadata {
 
   const ImageMetadata({
     required this.hash,
+    this.pHashValue,
     this.capturedAt,
     this.latitude,
     this.longitude,
@@ -19,10 +22,18 @@ class ImageMetadata {
   });
 }
 
+/// Single responsibility: extracts MD5 hash, pHash, EXIF metadata from an image file.
 class ImageMetadataService {
+  final PhashService _phashService;
+
+  ImageMetadataService(this._phashService);
+
   Future<ImageMetadata> extract(File imageFile) async {
     final bytes = await imageFile.readAsBytes();
     final hash = _computeHash(bytes);
+
+    // Compute perceptual hash in parallel with EXIF parsing
+    final pHashFuture = _phashService.computeHash(imageFile);
 
     Map<String, dynamic> rawMap = {};
     DateTime? capturedAt;
@@ -63,8 +74,11 @@ class ImageMetadataService {
       // EXIF parsing failed — return just the hash
     }
 
+    final pHashValue = await pHashFuture;
+
     return ImageMetadata(
       hash: hash,
+      pHashValue: pHashValue,
       capturedAt: capturedAt,
       latitude: latitude,
       longitude: longitude,

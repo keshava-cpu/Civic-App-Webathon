@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:civic_contribution/application/providers/report_flow_provider.dart';
+import 'package:civic_contribution/application/providers/user_provider.dart';
 import 'package:civic_contribution/presentation/widgets/category_picker.dart';
+import 'package:civic_contribution/presentation/widgets/duplicate_warning_banner.dart';
 
 class ReportFormScreen extends StatefulWidget {
   const ReportFormScreen({super.key});
@@ -22,12 +24,14 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
     final provider = context.read<ReportFlowProvider>();
     _descController.text = provider.description;
     _addressController.text = provider.address;
-    // Auto-fetch location if not already available
-    if (provider.latitude == null || provider.longitude == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    // Auto-fetch location if not already available, then run pHash check
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final communityId = context.read<UserProvider>().communityId;
+      if (provider.latitude == null || provider.longitude == null) {
         provider.fetchCurrentLocation();
-      });
-    }
+      }
+      provider.runPHashCheck(communityId);
+    });
   }
 
   @override
@@ -46,6 +50,7 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<ReportFlowProvider>();
     final cs = Theme.of(context).colorScheme;
+    final communityId = context.read<UserProvider>().communityId;
 
     return Scaffold(
       appBar: AppBar(
@@ -68,6 +73,20 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // pHash duplicate warning — shown above everything else
+            if (provider.checkingPHash)
+              const LinearProgressIndicator()
+            else if (provider.hasPHashWarning)
+              DuplicateWarningBanner(
+                existingDescription:
+                    provider.pHashDuplicateResult?.existingDescription,
+                onViewIssue: provider.pHashDuplicateResult?.existingIssueId !=
+                        null
+                    ? () => context.push(
+                        '/issue/${provider.pHashDuplicateResult!.existingIssueId}')
+                    : null,
+              ),
+
             // Photo preview
             if (provider.capturedImage != null)
               ClipRRect(
@@ -89,7 +108,10 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
             const SizedBox(height: 10),
             CategoryPicker(
               selected: provider.selectedCategory,
-              onSelected: provider.setCategory,
+              onSelected: (category) {
+                provider.setCategory(category);
+                provider.runPHashCheck(communityId);
+              },
             ),
             const SizedBox(height: 20),
 
@@ -149,7 +171,8 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
                             'Make sure location services are enabled',
                             style: TextStyle(
                                 fontSize: 12,
-                                color: cs.onPrimaryContainer.withOpacity(0.7)),
+                                color:
+                                    cs.onPrimaryContainer.withOpacity(0.7)),
                           ),
                         ],
                       ),
@@ -184,7 +207,8 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
                             'Location captured',
                             style: TextStyle(
                                 fontSize: 12,
-                                color: cs.onPrimaryContainer.withOpacity(0.7)),
+                                color:
+                                    cs.onPrimaryContainer.withOpacity(0.7)),
                           ),
                         ],
                       ),
@@ -200,11 +224,12 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
                 decoration: BoxDecoration(
                   color: Colors.orange.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                  border:
+                      Border.all(color: Colors.orange.withOpacity(0.5)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.location_off_outlined, 
+                    const Icon(Icons.location_off_outlined,
                         color: Colors.orange, size: 24),
                     const SizedBox(width: 8),
                     Expanded(
@@ -269,4 +294,3 @@ class _ReportFormScreenState extends State<ReportFormScreen> {
     );
   }
 }
-

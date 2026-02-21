@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:civic_contribution/application/providers/user_provider.dart';
 import 'package:civic_contribution/application/providers/verification_provider.dart';
-import 'package:civic_contribution/data/services/firestore_service.dart';
+import 'package:civic_contribution/data/services/database_service.dart';
 import 'package:civic_contribution/domain/constants.dart';
 import 'package:civic_contribution/domain/models/issue.dart';
 import 'package:civic_contribution/domain/models/verification.dart';
@@ -94,7 +94,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
     final currentUserId = userProvider.currentUserId;
     final currentProfile = userProvider.currentUserProfile;
     final verifyProvider = context.watch<VerificationProvider>();
-    final fs = context.read<FirestoreService>();
+    final fs = context.read<DatabaseService>();
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(

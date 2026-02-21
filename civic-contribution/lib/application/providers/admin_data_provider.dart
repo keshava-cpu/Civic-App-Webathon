@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:civic_contribution/domain/models/issue.dart';
-import 'package:civic_contribution/data/services/firestore_service.dart';
+import 'package:civic_contribution/data/services/database_service.dart';
 import 'package:civic_contribution/data/services/export_service.dart';
 
 /// Single responsibility: admin data table state + CSV export trigger.
 class AdminDataProvider extends ChangeNotifier {
-  final FirestoreService _firestoreService;
+  final DatabaseService _firestoreService;
   final ExportService _exportService;
   StreamSubscription<List<Issue>>? _subscription;
 
@@ -15,6 +16,7 @@ class AdminDataProvider extends ChangeNotifier {
   bool _loading = false;
   bool _exporting = false;
   String? _exportError;
+  String? _currentCommunityId;
 
   AdminDataProvider(this._firestoreService, this._exportService);
 
@@ -24,18 +26,27 @@ class AdminDataProvider extends ChangeNotifier {
   String? get exportError => _exportError;
 
   void subscribeToIssues(String communityId) {
+    if (_currentCommunityId == communityId && _subscription != null) {
+      debugPrint('[AdminDataProvider] Already subscribed to community: $communityId');
+      return;
+    }
+    
+    debugPrint('[AdminDataProvider] Subscribing to community: $communityId');
     _subscription?.cancel();
     _loading = true;
+    _currentCommunityId = communityId;
     notifyListeners();
 
     _subscription =
         _firestoreService.getIssuesByCommunityStream(communityId).listen(
       (issues) {
+        debugPrint('[AdminDataProvider] Received ${issues.length} issues');
         _issues = issues;
         _loading = false;
         notifyListeners();
       },
       onError: (Object error) {
+        debugPrint('[AdminDataProvider] Stream error: $error');
         _exportError = error.toString();
         _loading = false;
         notifyListeners();

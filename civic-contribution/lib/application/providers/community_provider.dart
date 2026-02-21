@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:civic_contribution/domain/models/community.dart';
 import 'package:civic_contribution/data/services/community_service.dart';
-import 'package:civic_contribution/data/services/firestore_service.dart';
+import 'package:civic_contribution/data/services/database_service.dart';
 
 /// Single responsibility: community search, selection, and admin grant state.
 class CommunityProvider extends ChangeNotifier {
   final CommunityService _communityService;
-  final FirestoreService _firestoreService;
+  final DatabaseService _firestoreService;
 
   List<Community> _searchResults = [];
   Community? _selectedCommunity;

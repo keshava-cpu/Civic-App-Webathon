@@ -20,8 +20,8 @@ class ExportService {
       final id = issue.id.length > 8 ? issue.id.substring(0, 8) : issue.id;
       final category = issue.category.label;
       final status = issue.status.label;
-      final lat = issue.location.latitude.toStringAsFixed(6);
-      final lon = issue.location.longitude.toStringAsFixed(6);
+      final lat = issue.latitude.toStringAsFixed(6);
+      final lon = issue.longitude.toStringAsFixed(6);
       final photo = issue.photoUrl ?? '';
       // Escape description for CSV (wrap in quotes, escape inner quotes)
       final desc = '"${issue.description.replaceAll('"', '""')}"';

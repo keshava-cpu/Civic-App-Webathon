@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:civic_contribution/domain/constants.dart';
 import 'package:civic_contribution/domain/models/verification.dart';
 import 'package:civic_contribution/data/services/credits_service.dart';
-import 'package:civic_contribution/data/services/firestore_service.dart';
+import 'package:civic_contribution/data/services/database_service.dart';
 import 'package:civic_contribution/data/services/storage_service.dart';
 
 class VerificationProvider extends ChangeNotifier {
-  final FirestoreService _firestoreService;
+  final DatabaseService _firestoreService;
   final StorageService _storageService;
   final CreditsService _creditsService;
 
@@ -56,11 +56,11 @@ class VerificationProvider extends ChangeNotifier {
 
       // Update verification doc
       await _firestoreService.updateVerification(issueId, existing.id, {
-        'isResolved': newIsResolved,
+        'is_resolved': newIsResolved,
         'comment': newComment,
-        'isReversed': true,
-        'isLocked': true,
-        'creditsAwarded': kPointsVerificationReversal,
+        'is_reversed': true,
+        'is_locked': true,
+        'credits_awarded': kPointsVerificationReversal,
       });
 
       // Re-check auto-verify

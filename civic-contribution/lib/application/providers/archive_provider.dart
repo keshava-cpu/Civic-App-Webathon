@@ -5,13 +5,13 @@ import 'package:share_plus/share_plus.dart';
 import 'package:civic_contribution/domain/models/issue.dart';
 import 'package:civic_contribution/data/services/archive_service.dart';
 import 'package:civic_contribution/data/services/archive_storage_service.dart';
-import 'package:civic_contribution/data/services/firestore_service.dart';
+import 'package:civic_contribution/data/services/database_service.dart';
 
 /// Single responsibility: orchestrates archive creation with progress tracking.
 class ArchiveProvider extends ChangeNotifier {
   final ArchiveService _archiveService;
   final ArchiveStorageService _archiveStorageService;
-  final FirestoreService _firestoreService;
+  final DatabaseService _firestoreService;
 
   ArchiveProvider(
     this._archiveService,

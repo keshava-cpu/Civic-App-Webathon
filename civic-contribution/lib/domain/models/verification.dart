@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Verification {
   final String id;
   final String issueId;
@@ -27,34 +25,36 @@ class Verification {
     required this.isLocked,
   });
 
-  factory Verification.fromFirestore(DocumentSnapshot doc, String issueId) {
-    final data = doc.data() as Map<String, dynamic>;
+  factory Verification.fromMap(String id, Map<String, dynamic> data) {
     return Verification(
-      id: doc.id,
-      issueId: issueId,
-      verifierId: data['verifierId'] ?? '',
-      photoUrl: data['photoUrl'],
-      isResolved: data['isResolved'] ?? false,
+      id: id,
+      issueId: data['issue_id'] ?? '',
+      verifierId: data['verifier_id'] ?? '',
+      photoUrl: data['photo_url'],
+      isResolved: data['is_resolved'] ?? false,
       comment: data['comment'] ?? '',
-      verifierTrustScore: (data['verifierTrustScore'] ?? 0.5).toDouble(),
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      creditsAwarded: (data['creditsAwarded'] ?? 0) as int,
-      isReversed: (data['isReversed'] ?? false) as bool,
-      isLocked: (data['isLocked'] ?? false) as bool,
+      verifierTrustScore: (data['verifier_trust_score'] ?? 0.5).toDouble(),
+      createdAt: data['created_at'] != null
+          ? DateTime.parse(data['created_at'] as String)
+          : DateTime.now(),
+      creditsAwarded: (data['credits_awarded'] ?? 0) as int,
+      isReversed: (data['is_reversed'] ?? false) as bool,
+      isLocked: (data['is_locked'] ?? false) as bool,
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
-      'verifierId': verifierId,
-      'photoUrl': photoUrl,
-      'isResolved': isResolved,
+      'issue_id': issueId,
+      'verifier_id': verifierId,
+      'photo_url': photoUrl,
+      'is_resolved': isResolved,
       'comment': comment,
-      'verifierTrustScore': verifierTrustScore,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'creditsAwarded': creditsAwarded,
-      'isReversed': isReversed,
-      'isLocked': isLocked,
+      'verifier_trust_score': verifierTrustScore,
+      'created_at': createdAt.toIso8601String(),
+      'credits_awarded': creditsAwarded,
+      'is_reversed': isReversed,
+      'is_locked': isLocked,
     };
   }
 

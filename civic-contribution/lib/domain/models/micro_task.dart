@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class MicroTask {
   final String id;
   final String issueId;
@@ -7,7 +5,8 @@ class MicroTask {
   final String? assigneeId;
   final bool completed;
   final DateTime? completedAt;
-  final GeoPoint? completedLocation;
+  final double? completedLatitude;
+  final double? completedLongitude;
 
   MicroTask({
     required this.id,
@@ -16,30 +15,34 @@ class MicroTask {
     this.assigneeId,
     required this.completed,
     this.completedAt,
-    this.completedLocation,
+    this.completedLatitude,
+    this.completedLongitude,
   });
 
-  factory MicroTask.fromFirestore(DocumentSnapshot doc, String issueId) {
-    final data = doc.data() as Map<String, dynamic>;
+  factory MicroTask.fromMap(String id, Map<String, dynamic> data) {
     return MicroTask(
-      id: doc.id,
-      issueId: issueId,
+      id: id,
+      issueId: data['issue_id'] ?? '',
       title: data['title'] ?? '',
-      assigneeId: data['assigneeId'],
+      assigneeId: data['assignee_id'],
       completed: data['completed'] ?? false,
-      completedAt: (data['completedAt'] as Timestamp?)?.toDate(),
-      completedLocation: data['completedLocation'] as GeoPoint?,
+      completedAt: data['completed_at'] != null
+          ? DateTime.parse(data['completed_at'] as String)
+          : null,
+      completedLatitude: (data['completed_latitude'] as num?)?.toDouble(),
+      completedLongitude: (data['completed_longitude'] as num?)?.toDouble(),
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
+      'issue_id': issueId,
       'title': title,
-      'assigneeId': assigneeId,
+      'assignee_id': assigneeId,
       'completed': completed,
-      'completedAt':
-          completedAt != null ? Timestamp.fromDate(completedAt!) : null,
-      'completedLocation': completedLocation,
+      'completed_at': completedAt?.toIso8601String(),
+      'completed_latitude': completedLatitude,
+      'completed_longitude': completedLongitude,
     };
   }
 
@@ -50,7 +53,8 @@ class MicroTask {
     String? assigneeId,
     bool? completed,
     DateTime? completedAt,
-    GeoPoint? completedLocation,
+    double? completedLatitude,
+    double? completedLongitude,
   }) {
     return MicroTask(
       id: id ?? this.id,
@@ -59,7 +63,8 @@ class MicroTask {
       assigneeId: assigneeId ?? this.assigneeId,
       completed: completed ?? this.completed,
       completedAt: completedAt ?? this.completedAt,
-      completedLocation: completedLocation ?? this.completedLocation,
+      completedLatitude: completedLatitude ?? this.completedLatitude,
+      completedLongitude: completedLongitude ?? this.completedLongitude,
     );
   }
 }

@@ -138,6 +138,8 @@ const int kPointsVerificationReversal = 5;
 
 // Duplicate detection
 const double kDuplicateRadiusMeters = 100.0;
+const int kPHashHammingThreshold = 10;          // 0-64; < 10 = likely duplicate
+const double kPHashSimilarityThreshold = 0.85;  // for isSimilar()
 
 // Verification threshold (weighted score needed to auto-verify)
 const double kVerificationThreshold = 0.6;
