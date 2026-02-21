@@ -16,6 +16,7 @@ import 'package:civic_contribution/data/services/auth_service.dart';
 import 'package:civic_contribution/data/services/community_service.dart';
 import 'package:civic_contribution/data/services/credits_service.dart';
 import 'package:civic_contribution/data/services/database_service.dart';
+import 'package:civic_contribution/data/services/duplicate_notification_service.dart';
 import 'package:civic_contribution/data/services/duplicate_service.dart';
 import 'package:civic_contribution/data/services/export_service.dart';
 import 'package:civic_contribution/data/services/image_metadata_service.dart';
@@ -54,6 +55,9 @@ class CivicApp extends StatelessWidget {
         ),
         Provider<CreditsService>(create: (_) => creditsService),
         Provider<DuplicateService>(create: (_) => duplicateService),
+        Provider<DuplicateNotificationService>(
+          create: (_) => DuplicateNotificationService(),
+        ),
         Provider<CommunityService>(create: (_) => communityService),
         Provider<ExportService>(create: (_) => exportService),
         Provider<ArchiveService>(create: (_) => archiveService),
@@ -110,6 +114,8 @@ class CivicApp extends StatelessWidget {
             creditsService: creditsService,
             metadataService: ctx.read<ImageMetadataService>(),
             phashService: phashService,
+            duplicateNotificationService:
+                ctx.read<DuplicateNotificationService>(),
           ),
         ),
         ChangeNotifierProvider<VerificationProvider>(

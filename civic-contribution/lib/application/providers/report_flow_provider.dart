@@ -7,6 +7,7 @@ import 'package:civic_contribution/data/services/duplicate_service.dart';
 import 'package:civic_contribution/data/services/database_service.dart';
 import 'package:civic_contribution/data/services/image_metadata_service.dart';
 import 'package:civic_contribution/data/services/location_service.dart';
+import 'package:civic_contribution/data/services/duplicate_notification_service.dart';
 import 'package:civic_contribution/data/services/phash_service.dart';
 import 'package:civic_contribution/data/services/storage_service.dart';
 
@@ -20,6 +21,7 @@ class ReportFlowProvider extends ChangeNotifier {
   final CreditsService _creditsService;
   final ImageMetadataService _metadataService;
   final PhashService _phashService;
+  final DuplicateNotificationService _duplicateNotificationService;
 
   // Form state
   File? capturedImage;
@@ -57,13 +59,15 @@ class ReportFlowProvider extends ChangeNotifier {
     required CreditsService creditsService,
     required ImageMetadataService metadataService,
     required PhashService phashService,
+    required DuplicateNotificationService duplicateNotificationService,
   })  : _locationService = locationService,
         _firestoreService = firestoreService,
         _storageService = storageService,
         _duplicateService = duplicateService,
         _creditsService = creditsService,
         _metadataService = metadataService,
-        _phashService = phashService;
+        _phashService = phashService,
+        _duplicateNotificationService = duplicateNotificationService;
 
   Future<void> onPhotoCaptured(File imageFile) async {
     capturedImage = imageFile;
@@ -145,6 +149,12 @@ class ReportFlowProvider extends ChangeNotifier {
         communityId: communityId,
       );
       _pHashDuplicateResult = result;
+      if (result.isDuplicate && result.existingIssueId != null) {
+        await _duplicateNotificationService.showDuplicateIssueNotification(
+          existingIssueId: result.existingIssueId!,
+          existingDescription: result.existingDescription,
+        );
+      }
     } catch (_) {
     } finally {
       _checkingPHash = false;
