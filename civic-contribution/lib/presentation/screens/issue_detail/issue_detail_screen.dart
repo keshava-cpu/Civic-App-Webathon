@@ -46,7 +46,8 @@ class IssueDetailScreen extends StatelessWidget {
           appBar: AppBar(
             title: Text(issue.category.label),
             actions: [
-              if (issue.status == IssueStatus.resolved)
+              // Only admins can verify resolved issues
+              if (issue.status == IssueStatus.resolved && isAdmin)
                 TextButton.icon(
                   onPressed: () => context.push('/verify/${issue.id}'),
                   icon: const Icon(Icons.verified_outlined),

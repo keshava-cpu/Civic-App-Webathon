@@ -145,12 +145,12 @@ class VerificationProvider extends ChangeNotifier {
     if (weightedTotal == 0) return;
 
     final ratio = weightedYes / weightedTotal;
-    if (ratio >= kVerificationThreshold) {
-      await _firestoreService.updateIssueStatus(
-          issueId, IssueStatus.verified.value);
-      return;
-    }
-
+    
+    // Only admins can change status to verified - community verification
+    // data is still collected but does not auto-promote status
+    // Admins can review verification data and manually update status via timeline
+    
+    // Auto-reopen if verification fails (still active)
     const reopenThreshold = 1 - kVerificationThreshold;
     if (ratio <= reopenThreshold) {
       await _firestoreService.updateIssueStatus(

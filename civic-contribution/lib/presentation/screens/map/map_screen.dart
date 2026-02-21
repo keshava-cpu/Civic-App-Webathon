@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:civic_contribution/domain/constants.dart';
 import 'package:civic_contribution/domain/models/issue.dart';
 import 'package:civic_contribution/application/providers/issue_provider.dart';
+import 'package:civic_contribution/application/providers/user_provider.dart';
 import 'package:civic_contribution/data/services/location_service.dart';
 import 'package:civic_contribution/presentation/widgets/map/map_widget.dart';
 import 'package:civic_contribution/presentation/widgets/status_chip.dart';
@@ -255,6 +256,8 @@ class _MapScreenState extends State<MapScreen> {
 
   void _showIssueSheet(BuildContext context, Issue issue) {
     final cs = Theme.of(context).colorScheme;
+    final userProvider = context.read<UserProvider>();
+    final isAdmin = userProvider.isAdmin;
 
     showModalBottomSheet(
       context: context,
@@ -381,7 +384,8 @@ class _MapScreenState extends State<MapScreen> {
                     label: const Text('View Details'),
                   ),
                 ),
-                if (issue.status == IssueStatus.resolved) ...[
+                // Only admins can verify resolved issues
+                if (issue.status == IssueStatus.resolved && isAdmin) ...[
                   const SizedBox(width: 8),
                   Expanded(
                     child: OutlinedButton.icon(
